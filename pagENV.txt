@@ -1,0 +1,22 @@
+# Open Anaconda Prompt (Important)
+
+conda create -n cv_gui python=3.12 -y       ##Create a New Conda Environment
+conda activate cv_gui       ##Activate it
+
+python --version    # verify python version 3.12.x
+conda install -c conda-forge opencv -y
+conda install -c conda-forge pillow -y
+pip install pyscreeze pyautogui
+pip install pywin32
+pip install comtypes
+
+
+# Test python
+from PIL import Image
+print(Image.__version__)
+
+import pyscreeze
+print(pyscreeze.__version__)
+
+import pyautogui
+img = pyautogui.screenshot()
