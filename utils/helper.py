@@ -12,18 +12,17 @@ def make_icon_finder(icons_dir):
 
     return icon
 
-
-# def connect_to_sap2000():
-#     """Connect to the active SAP2000 instance"""
-#     global sap_object, sap_model
-#     try:
-#         sap_object = comtypes.client.GetActiveObject("CSI.SAP2000.API.SapObject")
-#         sap_model = sap_object.SapModel
-#         print("✓ Connected to SAP2000")
-#         return True
-#     except Exception as e:
-#         print(f"✗ Could not connect to SAP2000: {e}")
-#         return False
+def connect_to_sap2000():
+    """Connect to the active SAP2000 instance"""
+    global sap_object, sap_model
+    try:
+        sap_object = comtypes.client.GetActiveObject("CSI.SAP2000.API.SapObject")
+        sap_model = sap_object.SapModel
+        print("✓ Connected to SAP2000")
+        return sap_model
+    except Exception as e:
+        print(f"✗ Could not connect to SAP2000: {e}")
+        return False
 
 
 def get_node_distance(sap_model, node1_id, node2_id):
