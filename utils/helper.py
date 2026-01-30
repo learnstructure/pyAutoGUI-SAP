@@ -44,31 +44,23 @@ def get_lp(L, db, fye):
 
 
 def click_image(image_path, n=1, confidence=0.8):
+    # Try to locate image
+    location = pag.locateOnScreen(image_path, confidence=confidence)
 
-    try:
-        # Find the image on screen
-        location = pag.locateOnScreen(image_path, confidence=confidence)
-        # location = pag.locateOnScreen(image_path)
-        print(location)
-        print(1)
-        if location:
-            # Get center coordinates
-            center = pag.center(location)
+    if location is None:
+        raise RuntimeError(f"Image not found on screen: {image_path}")
 
-            # Click the center
-            if n == 1:
-                pag.click(center.x, center.y)
-            else:
-                pag.doubleClick(center.x, center.y)
-            print(f"✓ Clicked {image_path} at ({center.x}, {center.y})")
-            return True
-        else:
-            print(f"✗ Could not find {image_path}")
-            return False
+    # Get center coordinates
+    center = pag.center(location)
 
-    except Exception as e:
-        print(f"✗ Error: {e}")
-        return False
+    # Click
+    if n == 1:
+        pag.click(center.x, center.y)
+    else:
+        pag.doubleClick(center.x, center.y)
+
+    print(f"✓ Clicked {image_path} at ({center.x}, {center.y})")
+    return True
 
 
 def click_image_offset(
@@ -78,38 +70,35 @@ def click_image_offset(
     n=1,
     confidence=0.8,
 ):
+    # Locate image on screen
+    location = pag.locateOnScreen(image_path, confidence=confidence)
 
-    try:
-        # Find the image on screen
-        location = pag.locateOnScreen(image_path, confidence=confidence)
+    if location is None:
+        raise RuntimeError(f"Image not found on screen: {image_path}")
 
-        if location:
-            # Calculate click position based on ratios
-            left, top, width, height = location
-            target_x = left + (width * x_offset_ratio)
-            target_y = top + (height * y_offset_ratio)
+    # Unpack location
+    left, top, width, height = location
 
-            # Perform the click(s)
-            if n == 1:
-                pag.click(target_x, target_y)
-            elif n == 2:
-                pag.doubleClick(target_x, target_y)
-            else:
-                # For more than 2 clicks
-                pag.click(target_x, target_y, clicks=n, interval=0.1)
+    # Compute target location
+    target_x = left + width * x_offset_ratio
+    target_y = top + height * y_offset_ratio
 
-            print(
-                f"✓ Clicked {image_path} at ({target_x:.0f}, {target_y:.0f}) "
-                f"[x_ratio={x_offset_ratio}, y_ratio={y_offset_ratio}]"
-            )
-            return True
-        else:
-            print(f"✗ Could not find {image_path}")
-            return False
+    # Perform clicks
+    if n == 1:
+        pag.click(target_x, target_y)
+    elif n == 2:
+        pag.doubleClick(target_x, target_y)
+    elif n > 2:
+        pag.click(target_x, target_y, clicks=n, interval=0.1)
+    else:
+        raise ValueError("n must be >= 1")
 
-    except Exception as e:
-        print(f"✗ Error: {e}")
-        return False
+    print(
+        f"✓ Clicked {image_path} at ({int(target_x)}, {int(target_y)}) "
+        f"[x_ratio={x_offset_ratio}, y_ratio={y_offset_ratio}, clicks={n}]"
+    )
+
+    return True
 
 
 def maximize_window_temporarily():
